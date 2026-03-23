@@ -182,12 +182,17 @@ class App:
 
         self.tipo = tk.StringVar(value="T")
 
-        tk.Radiobutton(controls, text="T", variable=self.tipo, value="T").grid(row=0, column=4)
-        tk.Radiobutton(controls, text="#", variable=self.tipo, value="#").grid(row=0, column=5)
+        self.rb_t = tk.Radiobutton(controls, text="T", variable=self.tipo, value="T")
+        self.rb_t.grid(row=0, column=4)
 
-        tk.Button(controls, text="Agregar", command=self.agregar).grid(row=0, column=6)
+        self.rb_obstaculo = tk.Radiobutton(controls, text="#", variable=self.tipo, value="#")
+        self.rb_obstaculo.grid(row=0, column=5)
 
-        tk.Button(self.frame_editor, text="Buscar camino", command=self.buscar).pack()
+        self.btn_agregar = tk.Button(controls, text="Agregar", command=self.agregar)
+        self.btn_agregar.grid(row=0, column=6)
+
+        self.btn_buscar = tk.Button(self.frame_editor, text="Buscar camino", command=self.buscar)
+        self.btn_buscar.pack()
 
         # -----------------------------------
         for e in [self.entry_r, self.entry_c]:
@@ -261,24 +266,28 @@ class App:
         guardar_mapa(self.filename, self.matrix)
 
         if not tesoros_accesibles(self.matrix):
-            self.message.config(text="❌ Sin solución, no se encontro ningun tesoro", fg="red")
+            self.message.config(text=" Sin solución, no se encontro ningun tesoro", fg="red")
             guardar_error(*self.start)
             guardar_copia(self.filename, self.matrix)
+            self.deshabilitar_controles()
             return
 
         path = encontrar_camino(self.matrix, self.start)
 
         if not path:
-            self.message.config(text="❌ Sin solución, no se encontro ningun tesoro", fg="red")
+            self.message.config(text=" Sin solución, no se encontro ningun tesoro", fg="red")
             guardar_error(*self.start)
             guardar_copia(self.filename, self.matrix)
+            self.deshabilitar_controles()
             return
 
         limpiar_error()
         self.matrix[self.start[0]][self.start[1]] = "X"
         guardar_copia(self.filename, self.matrix, path)
 
-        self.message.config(text="✅ Tesoro(s) Encontrado(s)", fg="green")
+        self.message.config(text=" Tesoro(s) Encontrado(s)", fg="green")
+
+        self.deshabilitar_controles()  # 👈 NUEVA LÍNEA
 
         self.animating = True
         self.animar(path)
@@ -297,7 +306,13 @@ class App:
 
         self.root.after(50, lambda: self.animar(path, i+1, drawn))
 
-
+    def deshabilitar_controles(self):
+        self.btn_agregar.config(state="disabled")
+        self.btn_buscar.config(state="disabled")
+        self.entry_r.config(state="disabled")
+        self.entry_c.config(state="disabled")
+        self.rb_t.config(state="disabled")
+        self.rb_obstaculo.config(state="disabled")
 # ----------------------------------
 
 root = tk.Tk()
