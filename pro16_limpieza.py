@@ -287,7 +287,7 @@ class App:
 
         self.message.config(text=" Tesoro(s) Encontrado(s)", fg="green")
 
-        self.deshabilitar_controles()  # 👈 NUEVA LÍNEA
+        self.deshabilitar_controles()  
 
         self.animating = True
         self.animar(path)
